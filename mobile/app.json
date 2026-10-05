@@ -1,0 +1,72 @@
+{
+  "expo": {
+    "name": "Run League",
+    "slug": "run-league",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "scheme": "runleague",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#101317"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "bundleIdentifier": "au.edu.uow.runleague",
+      "buildNumber": "1",
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Run League uses your location to measure the distance and draw the route of your runs.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Run League keeps recording your route while your phone is locked, so a run is measured from start to finish.",
+        "UIBackgroundModes": [
+          "location"
+        ],
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "au.edu.uow.runleague",
+      "versionCode": 1,
+      "permissions": [
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#101317"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+        }
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-status-bar",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Run League uses your location to measure the distance and draw the route of your runs.",
+          "locationAlwaysAndWhenInUsePermission": "Run League keeps recording your route while your phone is locked, so a run is measured from start to finish.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": {},
+      "eas": {
+        "projectId": "fb652279-b7de-4799-b887-cd46a72518e6"
+      }
+    },
+    "owner": "dillonkh"
+  }
+}

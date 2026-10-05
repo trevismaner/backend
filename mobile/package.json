@@ -1,0 +1,38 @@
+{
+  "name": "run-league-mobile",
+  "version": "1.0.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "preflight": "node scripts/preflight.mjs",
+    "test:deps": "node tests/peer_deps.test.mjs",
+    "check:deps": "node scripts/checkPeerDeps.mjs",
+    "check:audit": "node scripts/checkAudit.mjs"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-navigation/native": "^6.1.18",
+    "@react-navigation/native-stack": "^6.11.0",
+    "expo": "^57.0.20",
+    "expo-location": "~57.0.16",
+    "expo-notifications": "~57.0.17",
+    "expo-status-bar": "~57.0.1",
+    "expo-system-ui": "~57.0.4",
+    "expo-task-manager": "~57.0.21",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-maps": "1.27.2",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0"
+  },
+  "private": true,
+  "devDependencies": {
+    "@babel/core": "^8.0.6",
+    "@babel/preset-env": "^8.0.6",
+    "@babel/preset-react": "^8.0.1",
+    "@babel/register": "^8.0.6",
+    "react-test-renderer": "19.2.3"
+  }
+}
