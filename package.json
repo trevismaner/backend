@@ -1,0 +1,52 @@
+{
+  "name": "run-league-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Run League - running & tournament management app",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "admin:create": "node scripts/createSystemAdmin.js",
+    "migrate": "node scripts/migrate.js",
+    "migrate:status": "node scripts/migrate.js --status",
+    "test:e2e": "node --test tests/e2e.test.mjs",
+    "seed": "node scripts/seedTestData.js",
+    "seed:reset": "node scripts/seedTestData.js --reset",
+    "test:connections": "node tests/connections.test.mjs",
+    "test:weather": "node tests/weather_service.test.mjs",
+    "test:stories": "node tests/verify_all_stories.mjs",
+    "test:seed": "node tests/seed_data.test.mjs",
+    "test:features": "node tests/features.test.mjs",
+    "test:tracking": "node tests/verify_run_tracking.mjs",
+    "test:planner": "node tests/verify_ai_planner.mjs",
+    "premigrate": "node scripts/checkDeps.cjs",
+    "prestart": "node scripts/checkDeps.cjs",
+    "predev": "node scripts/checkDeps.cjs",
+    "premigrate:status": "node scripts/checkDeps.cjs",
+    "preseed": "node scripts/checkDeps.cjs"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "expo-server-sdk": "^3.10.0",
+    "express": "^4.19.2",
+    "express-rate-limit": "^8.7.0",
+    "express-validator": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "node-cron": "^4.6.0",
+    "pg": "^8.12.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
+  "overrides": {
+    "chokidar": "$chokidar",
+    "braces": "^3.0.3",
+    "uuid": "^11.1.1",
+    "nodemon": {
+      "chokidar": "^3.6.0"
+    }
+  }
+}
