@@ -1,0 +1,586 @@
+{
+ "startedAt": "2026-01-05T06:00:00+00:00",
+ "cases": [
+  {
+   "name": "one run only",
+   "activeWeeks": 1,
+   "runs": [
+    {
+     "offsetDays": 0,
+     "distanceKm": 5.0,
+     "durationSeconds": 1800
+    }
+   ],
+   "expected": {
+    "weekly_km": 5.0,
+    "runs_per_week": 1.0,
+    "longest_run_km": 5.0,
+    "avg_pace": 6.0,
+    "tenure_months": 0.3
+   }
+  },
+  {
+   "name": "all runs on one day",
+   "activeWeeks": 1,
+   "runs": [
+    {
+     "offsetDays": 0,
+     "distanceKm": 8.15,
+     "durationSeconds": 3468
+    },
+    {
+     "offsetDays": 0,
+     "distanceKm": 3.57,
+     "durationSeconds": 1698
+    },
+    {
+     "offsetDays": 0,
+     "distanceKm": 7.57,
+     "durationSeconds": 3342
+    },
+    {
+     "offsetDays": 0,
+     "distanceKm": 3.77,
+     "durationSeconds": 1437
+    }
+   ],
+   "expected": {
+    "weekly_km": 23.06,
+    "runs_per_week": 4.0,
+    "longest_run_km": 8.15,
+    "avg_pace": 7.182493157022363,
+    "tenure_months": 0.3
+   }
+  },
+  {
+   "name": "two weeks, mixed",
+   "activeWeeks": 2,
+   "runs": [
+    {
+     "offsetDays": 2,
+     "distanceKm": 9.65,
+     "durationSeconds": 3132
+    },
+    {
+     "offsetDays": 5,
+     "distanceKm": 11.32,
+     "durationSeconds": 3230
+    },
+    {
+     "offsetDays": 5,
+     "distanceKm": 15.41,
+     "durationSeconds": 6497
+    },
+    {
+     "offsetDays": 7,
+     "distanceKm": 14.37,
+     "durationSeconds": 5102
+    },
+    {
+     "offsetDays": 9,
+     "distanceKm": 17.56,
+     "durationSeconds": 8505
+    },
+    {
+     "offsetDays": 10,
+     "distanceKm": 14.68,
+     "durationSeconds": 4650
+    },
+    {
+     "offsetDays": 12,
+     "distanceKm": 10.0,
+     "durationSeconds": 2805
+    }
+   ],
+   "expected": {
+    "weekly_km": 46.49499999999999,
+    "runs_per_week": 3.5,
+    "longest_run_km": 17.56,
+    "avg_pace": 5.876539888516798,
+    "tenure_months": 0.328515111695138
+   }
+  },
+  {
+   "name": "wide distance spread",
+   "activeWeeks": 5,
+   "runs": [
+    {
+     "offsetDays": 6,
+     "distanceKm": 11.77,
+     "durationSeconds": 4352
+    },
+    {
+     "offsetDays": 15,
+     "distanceKm": 16.09,
+     "durationSeconds": 5024
+    },
+    {
+     "offsetDays": 22,
+     "distanceKm": 5.9,
+     "durationSeconds": 2379
+    },
+    {
+     "offsetDays": 28,
+     "distanceKm": 8.81,
+     "durationSeconds": 4097
+    },
+    {
+     "offsetDays": 30,
+     "distanceKm": 15.11,
+     "durationSeconds": 7809
+    },
+    {
+     "offsetDays": 30,
+     "distanceKm": 23.01,
+     "durationSeconds": 8085
+    },
+    {
+     "offsetDays": 33,
+     "distanceKm": 26.97,
+     "durationSeconds": 13698
+    },
+    {
+     "offsetDays": 37,
+     "distanceKm": 13.62,
+     "durationSeconds": 4681
+    },
+    {
+     "offsetDays": 39,
+     "distanceKm": 22.47,
+     "durationSeconds": 6661
+    }
+   ],
+   "expected": {
+    "weekly_km": 28.75,
+    "runs_per_week": 1.8,
+    "longest_run_km": 26.97,
+    "avg_pace": 6.604554544975135,
+    "tenure_months": 1.0840998685939554
+   }
+  },
+  {
+   "name": "a year of training",
+   "activeWeeks": 33,
+   "runs": [
+    {
+     "offsetDays": 2,
+     "distanceKm": 21.27,
+     "durationSeconds": 7180
+    },
+    {
+     "offsetDays": 11,
+     "distanceKm": 25.16,
+     "durationSeconds": 7047
+    },
+    {
+     "offsetDays": 12,
+     "distanceKm": 4.59,
+     "durationSeconds": 1201
+    },
+    {
+     "offsetDays": 13,
+     "distanceKm": 22.78,
+     "durationSeconds": 7993
+    },
+    {
+     "offsetDays": 21,
+     "distanceKm": 8.19,
+     "durationSeconds": 2950
+    },
+    {
+     "offsetDays": 28,
+     "distanceKm": 7.96,
+     "durationSeconds": 3241
+    },
+    {
+     "offsetDays": 32,
+     "distanceKm": 15.6,
+     "durationSeconds": 5170
+    },
+    {
+     "offsetDays": 41,
+     "distanceKm": 11.84,
+     "durationSeconds": 4633
+    },
+    {
+     "offsetDays": 45,
+     "distanceKm": 13.41,
+     "durationSeconds": 3501
+    },
+    {
+     "offsetDays": 50,
+     "distanceKm": 7.07,
+     "durationSeconds": 3329
+    },
+    {
+     "offsetDays": 72,
+     "distanceKm": 27.62,
+     "durationSeconds": 11267
+    },
+    {
+     "offsetDays": 77,
+     "distanceKm": 10.91,
+     "durationSeconds": 5156
+    },
+    {
+     "offsetDays": 84,
+     "distanceKm": 24.25,
+     "durationSeconds": 9993
+    },
+    {
+     "offsetDays": 88,
+     "distanceKm": 15.68,
+     "durationSeconds": 4788
+    },
+    {
+     "offsetDays": 99,
+     "distanceKm": 6.51,
+     "durationSeconds": 2972
+    },
+    {
+     "offsetDays": 100,
+     "distanceKm": 15.85,
+     "durationSeconds": 4573
+    },
+    {
+     "offsetDays": 101,
+     "distanceKm": 11.95,
+     "durationSeconds": 4529
+    },
+    {
+     "offsetDays": 105,
+     "distanceKm": 8.6,
+     "durationSeconds": 3832
+    },
+    {
+     "offsetDays": 109,
+     "distanceKm": 23.72,
+     "durationSeconds": 9789
+    },
+    {
+     "offsetDays": 125,
+     "distanceKm": 15.23,
+     "durationSeconds": 5948
+    },
+    {
+     "offsetDays": 147,
+     "distanceKm": 19.19,
+     "durationSeconds": 7598
+    },
+    {
+     "offsetDays": 156,
+     "distanceKm": 6.2,
+     "durationSeconds": 2107
+    },
+    {
+     "offsetDays": 157,
+     "distanceKm": 5.08,
+     "durationSeconds": 1821
+    },
+    {
+     "offsetDays": 158,
+     "distanceKm": 12.58,
+     "durationSeconds": 3455
+    },
+    {
+     "offsetDays": 165,
+     "distanceKm": 6.69,
+     "durationSeconds": 2549
+    },
+    {
+     "offsetDays": 170,
+     "distanceKm": 8.44,
+     "durationSeconds": 3899
+    },
+    {
+     "offsetDays": 170,
+     "distanceKm": 19.11,
+     "durationSeconds": 6177
+    },
+    {
+     "offsetDays": 182,
+     "distanceKm": 19.36,
+     "durationSeconds": 4752
+    },
+    {
+     "offsetDays": 182,
+     "distanceKm": 28.92,
+     "durationSeconds": 10288
+    },
+    {
+     "offsetDays": 199,
+     "distanceKm": 24.35,
+     "durationSeconds": 6328
+    },
+    {
+     "offsetDays": 200,
+     "distanceKm": 16.65,
+     "durationSeconds": 5957
+    },
+    {
+     "offsetDays": 201,
+     "distanceKm": 28.38,
+     "durationSeconds": 10706
+    },
+    {
+     "offsetDays": 201,
+     "distanceKm": 16.31,
+     "durationSeconds": 4960
+    },
+    {
+     "offsetDays": 204,
+     "distanceKm": 12.62,
+     "durationSeconds": 4606
+    },
+    {
+     "offsetDays": 204,
+     "distanceKm": 15.41,
+     "durationSeconds": 3778
+    },
+    {
+     "offsetDays": 205,
+     "distanceKm": 25.48,
+     "durationSeconds": 11596
+    },
+    {
+     "offsetDays": 207,
+     "distanceKm": 7.65,
+     "durationSeconds": 2853
+    },
+    {
+     "offsetDays": 217,
+     "distanceKm": 6.82,
+     "durationSeconds": 2737
+    },
+    {
+     "offsetDays": 229,
+     "distanceKm": 11.31,
+     "durationSeconds": 4505
+    },
+    {
+     "offsetDays": 236,
+     "distanceKm": 22.9,
+     "durationSeconds": 9721
+    },
+    {
+     "offsetDays": 238,
+     "distanceKm": 6.8,
+     "durationSeconds": 3127
+    },
+    {
+     "offsetDays": 240,
+     "distanceKm": 9.99,
+     "durationSeconds": 2488
+    },
+    {
+     "offsetDays": 241,
+     "distanceKm": 18.43,
+     "durationSeconds": 6064
+    },
+    {
+     "offsetDays": 254,
+     "distanceKm": 25.57,
+     "durationSeconds": 11097
+    },
+    {
+     "offsetDays": 276,
+     "distanceKm": 12.25,
+     "durationSeconds": 5742
+    },
+    {
+     "offsetDays": 281,
+     "distanceKm": 11.56,
+     "durationSeconds": 4203
+    },
+    {
+     "offsetDays": 281,
+     "distanceKm": 10.66,
+     "durationSeconds": 4953
+    },
+    {
+     "offsetDays": 282,
+     "distanceKm": 8.28,
+     "durationSeconds": 2077
+    },
+    {
+     "offsetDays": 284,
+     "distanceKm": 15.31,
+     "durationSeconds": 7321
+    },
+    {
+     "offsetDays": 286,
+     "distanceKm": 27.18,
+     "durationSeconds": 11406
+    },
+    {
+     "offsetDays": 287,
+     "distanceKm": 27.16,
+     "durationSeconds": 12343
+    },
+    {
+     "offsetDays": 290,
+     "distanceKm": 17.49,
+     "durationSeconds": 5524
+    },
+    {
+     "offsetDays": 296,
+     "distanceKm": 24.07,
+     "durationSeconds": 9600
+    },
+    {
+     "offsetDays": 300,
+     "distanceKm": 13.72,
+     "durationSeconds": 3604
+    },
+    {
+     "offsetDays": 308,
+     "distanceKm": 23.42,
+     "durationSeconds": 7096
+    },
+    {
+     "offsetDays": 308,
+     "distanceKm": 28.36,
+     "durationSeconds": 8447
+    },
+    {
+     "offsetDays": 308,
+     "distanceKm": 7.19,
+     "durationSeconds": 3160
+    },
+    {
+     "offsetDays": 331,
+     "distanceKm": 7.99,
+     "durationSeconds": 2261
+    },
+    {
+     "offsetDays": 354,
+     "distanceKm": 19.58,
+     "durationSeconds": 8809
+    },
+    {
+     "offsetDays": 358,
+     "distanceKm": 9.11,
+     "durationSeconds": 2865
+    }
+   ],
+   "expected": {
+    "weekly_km": 28.356363636363643,
+    "runs_per_week": 1.8181818181818181,
+    "longest_run_km": 28.92,
+    "avg_pace": 6.09935622767965,
+    "tenure_months": 11.695137976346912
+   }
+  },
+  {
+   "name": "sparse, long gaps",
+   "activeWeeks": 5,
+   "runs": [
+    {
+     "offsetDays": 64,
+     "distanceKm": 6.86,
+     "durationSeconds": 2272
+    },
+    {
+     "offsetDays": 100,
+     "distanceKm": 7.38,
+     "durationSeconds": 2523
+    },
+    {
+     "offsetDays": 156,
+     "distanceKm": 10.07,
+     "durationSeconds": 3434
+    },
+    {
+     "offsetDays": 195,
+     "distanceKm": 9.04,
+     "durationSeconds": 3548
+    },
+    {
+     "offsetDays": 200,
+     "distanceKm": 9.49,
+     "durationSeconds": 3303
+    }
+   ],
+   "expected": {
+    "weekly_km": 8.568000000000001,
+    "runs_per_week": 1.0,
+    "longest_run_km": 10.07,
+    "avg_pace": 5.848688730907835,
+    "tenure_months": 4.467805519053877
+   }
+  },
+  {
+   "name": "heavy week, then quiet",
+   "activeWeeks": 8,
+   "runs": [
+    {
+     "offsetDays": 2,
+     "distanceKm": 14.76,
+     "durationSeconds": 4315
+    },
+    {
+     "offsetDays": 7,
+     "distanceKm": 16.31,
+     "durationSeconds": 5440
+    },
+    {
+     "offsetDays": 11,
+     "distanceKm": 24.25,
+     "durationSeconds": 7048
+    },
+    {
+     "offsetDays": 11,
+     "distanceKm": 23.72,
+     "durationSeconds": 6187
+    },
+    {
+     "offsetDays": 39,
+     "distanceKm": 17.44,
+     "durationSeconds": 5760
+    },
+    {
+     "offsetDays": 45,
+     "distanceKm": 9.8,
+     "durationSeconds": 2685
+    },
+    {
+     "offsetDays": 51,
+     "distanceKm": 15.12,
+     "durationSeconds": 5567
+    },
+    {
+     "offsetDays": 65,
+     "distanceKm": 18.13,
+     "durationSeconds": 6606
+    },
+    {
+     "offsetDays": 67,
+     "distanceKm": 21.67,
+     "durationSeconds": 6745
+    },
+    {
+     "offsetDays": 73,
+     "distanceKm": 21.34,
+     "durationSeconds": 5549
+    },
+    {
+     "offsetDays": 75,
+     "distanceKm": 9.86,
+     "durationSeconds": 3476
+    },
+    {
+     "offsetDays": 78,
+     "distanceKm": 21.55,
+     "durationSeconds": 6131
+    }
+   ],
+   "expected": {
+    "weekly_km": 26.74375,
+    "runs_per_week": 1.5,
+    "longest_run_km": 24.25,
+    "avg_pace": 5.17012704952443,
+    "tenure_months": 2.4967148488830486
+   }
+  }
+ ]
+}
