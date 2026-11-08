@@ -1,25 +1,15 @@
 import cron from 'node-cron';
-import { Expo } from 'expo-server-sdk';
 import Notification from '../entities/Notification.js';
-
-const expo = new Expo();
+import { sendPushNotifications } from '../control/PushSender.js';
+import {
+  sendPlanSessionReminders,
+  sendMissedSessionNudges,
+  PLAN_TIMEZONE,
+} from '../control/SendPlanSessionRemindersController.js';
 
 const NO_RUN_DAYS_THRESHOLD = 3;
 const OVERTRAINING_RUN_COUNT = 5;
 const OVERTRAINING_WINDOW_DAYS = 7;
-
-async function sendPushNotifications(pushMessages) {
-  const validMessages = pushMessages.filter((m) => Expo.isExpoPushToken(m.to));
-  const chunks = expo.chunkPushNotifications(validMessages);
-
-  for (const chunk of chunks) {
-    try {
-      await expo.sendPushNotificationsAsync(chunk);
-    } catch (err) {
-      console.error('Push notification send error:', err);
-    }
-  }
-}
 
 async function generateExerciseReminders() {
   const inactiveUsers = await Notification.getUsersWithNoRecentRun(NO_RUN_DAYS_THRESHOLD);
@@ -67,16 +57,31 @@ async function generateOvertrainingAlerts() {
 }
 
 export function startReminderScheduler() {
-  cron.schedule('0 9 * * *', async () => {
-    console.log('Running daily reminder job:', new Date().toISOString());
-    await generateExerciseReminders();
-    await generateOvertrainingAlerts();
-  });
+  cron.schedule(
+    '0 9 * * *',
+    async () => {
+      console.log('Running daily reminder job:', new Date().toISOString());
+      await sendPlanSessionReminders();
+      await generateExerciseReminders();
+      await generateOvertrainingAlerts();
+    },
+    { timezone: PLAN_TIMEZONE }
+  );
 
-  console.log('Reminder scheduler started (runs daily at 09:00 server time)');
+  cron.schedule(
+    '0 20 * * *',
+    async () => {
+      console.log('Running evening missed-session job:', new Date().toISOString());
+      await sendMissedSessionNudges();
+    },
+    { timezone: PLAN_TIMEZONE }
+  );
+
+  console.log(`Reminder scheduler started (09:00 and 20:00, ${PLAN_TIMEZONE})`);
 }
 
 export async function runReminderJobNow() {
+  await sendPlanSessionReminders();
   await generateExerciseReminders();
   await generateOvertrainingAlerts();
 }

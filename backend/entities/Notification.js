@@ -82,6 +82,12 @@ class Notification {
          SELECT 1 FROM runs r
          WHERE r.user_id = u.user_id
          AND r.started_at > NOW() - make_interval(days => $1::int)
+       )
+       AND NOT EXISTS (
+         SELECT 1 FROM notifications n
+         WHERE n.user_id = u.user_id
+         AND n.type = 'plan_session_reminder'
+         AND n.created_at > NOW() - INTERVAL '12 hours'
        )`,
       [daysThreshold]
     );

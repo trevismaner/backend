@@ -144,6 +144,47 @@ class PlanSchedule {
     return weeks;
   }
 
+  static async findSessionsDueToday({ timezone, notifiedType, onlyIfNoRunToday }) {
+    const result = await pool.query(
+      `SELECT DISTINCT ON (p.user_id)
+              p.user_id, u.push_token,
+              s.session_id, s.session_type, s.distance_km, s.duration_minutes, s.description
+         FROM fitness_plans p
+         JOIN users u ON u.user_id = p.user_id
+         LEFT JOIN user_notification_preferences np ON np.user_id = u.user_id
+         JOIN plan_weeks w ON w.plan_id = p.plan_id
+         JOIN plan_sessions s ON s.week_id = w.week_id
+        WHERE p.is_active = TRUE
+          AND p.generation_status = 'ready'
+          AND u.is_suspended = FALSE
+          AND COALESCE(np.exercise_reminders, TRUE) = TRUE
+          AND s.session_type <> 'rest'
+          AND s.completed_run_id IS NULL
+          AND s.day_of_week = EXTRACT(ISODOW FROM (NOW() AT TIME ZONE $1))::int
+          AND w.week_number = (
+                (NOW() AT TIME ZONE $1)::date
+                - date_trunc('week', (COALESCE(p.generated_at, p.created_at) AT TIME ZONE 'UTC') AT TIME ZONE $1)::date
+              ) / 7 + 1
+          AND NOT EXISTS (
+                SELECT 1 FROM notifications n
+                 WHERE n.user_id = p.user_id
+                   AND n.type = $2
+                   AND (n.created_at AT TIME ZONE 'UTC' AT TIME ZONE $1)::date = (NOW() AT TIME ZONE $1)::date
+              )
+          AND (
+                $3::boolean = FALSE
+                OR NOT EXISTS (
+                     SELECT 1 FROM runs r
+                      WHERE r.user_id = p.user_id
+                        AND (r.started_at AT TIME ZONE 'UTC' AT TIME ZONE $1)::date = (NOW() AT TIME ZONE $1)::date
+                   )
+              )
+        ORDER BY p.user_id, p.created_at DESC`,
+      [timezone, notifiedType, onlyIfNoRunToday]
+    );
+    return result.rows;
+  }
+
   /** Ticks a session off against the run that completed it. */
   static async completeSession(sessionId, userId, runId) {
     const result = await pool.query(
