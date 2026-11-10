@@ -335,10 +335,14 @@ Imported runs record the provider's activity id, and a unique index on
 `(user_id, source, external_id)` means re-syncing cannot create duplicates. They carry heart
 rate and calories, so they feed RU-17/18/19 and the risk score like any logged run.
 
-Fitbit has an activity importer; Garmin and Samsung Health connect but cannot import yet
-(their activity APIs need a signed developer agreement, so no adapter was guessed at).
-Apple Health is listed but not connectable — it is an on-device framework needing a native
-build, not a web API.
+Three wearables are offered: Fitbit, Google Health and Garmin Connect. Fitbit has an
+activity importer; Google Health and Garmin complete the handshake but cannot import yet, so
+no adapter was guessed at for either (see `control/wearableAdapters.js`).
+
+Samsung Health and Apple Health were offered until migration 010 and are not any more.
+Neither could ever complete a connection — Samsung's activity endpoints need a signed
+developer agreement, and Apple HealthKit is an on-device framework rather than a web API —
+so both only put permanently unavailable entries on the connections screen.
 
 Run `node tests/connections.test.mjs` to exercise the whole flow against a local stub.
 
@@ -437,8 +441,10 @@ Two are marked *out of app* there because they cannot be satisfied by this codeb
 - **Real OAuth for the five social platforms** (Facebook, Instagram, X, Strava, TikTok). The
   handshake is written and tested against a stub; switching it on needs real developer
   credentials from each platform. Sharing itself works, via the device's native share sheet.
-- **Garmin and Samsung Health activity import.** They connect, but their activity APIs need a
-  signed developer agreement, so no adapter was guessed at. Fitbit imports.
+- **Google Health and Garmin activity import.** Both complete the OAuth handshake, but
+  neither adapter is written: Garmin's activity endpoints need a signed developer agreement,
+  and the Google Health response shape should be captured from a real call rather than
+  assumed. Fitbit imports.
 
 Smaller gaps worth knowing about:
 

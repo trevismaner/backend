@@ -21,6 +21,7 @@ import adminRevokeBadge from './AdminRevokeBadgeBoundary.js';
 
 // groups
 import adminListGroups from './AdminListGroupsBoundary.js';
+import adminCreateGroup from './AdminCreateGroupBoundary.js';
 import adminSetGroupSuspension from './AdminSetGroupSuspensionBoundary.js';
 import adminDeleteGroup from './AdminDeleteGroupBoundary.js';
 import adminUpdateGroup from './AdminUpdateGroupBoundary.js';
@@ -67,6 +68,7 @@ router.post('/users/:userId/badges', adminAwardBadge);
 router.delete('/users/:userId/badges/:badgeId', adminRevokeBadge);
 
 router.get('/groups', adminListGroups);
+router.post('/groups', adminCreateGroup);           // completes group CRUD (defect D-07)
 router.patch('/groups/:groupId/suspension', adminSetGroupSuspension);
 router.put('/groups/:groupId', adminUpdateGroup);   // SA-21
 router.delete('/groups/:groupId', adminDeleteGroup);

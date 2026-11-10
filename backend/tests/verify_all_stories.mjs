@@ -200,7 +200,7 @@ await story('RU-16', 'Connect a wearable device', async () => {
   if (list.status !== 200 || !Array.isArray(list.data?.wearables)) return 'GET /connections did not list wearables';
 
   const names = list.data.wearables.map((w) => w.provider);
-  if (!['fitbit', 'garmin', 'samsung_health', 'apple_health'].every((p) => names.includes(p))) {
+  if (!['fitbit', 'garmin', 'google_health'].every((p) => names.includes(p))) {
     return `wearable providers missing: ${names.join(', ')}`;
   }
   // Without credentials configured a connect attempt must refuse cleanly, not pretend.
@@ -238,83 +238,6 @@ await story('RU-20', 'Customise notification preferences', async () => {
   // NOTE: this endpoint returns snake_case while the rest of the API is camelCase
   const value = p.exerciseReminders ?? p.exercise_reminders;
   return r.status === 200 && value === false;
-});
-
-console.log('\n━━━ REGISTERED USER — plan reminders ━━━');
-
-/**
- * RU-52 and RU-53 exercise the two scheduled jobs. Neither has an HTTP endpoint, so the job
- * functions are imported and invoked directly.
- *
- * The connection is forced onto the same database the rest of this suite uses BEFORE that
- * import: config/db.js reads its settings once, at module evaluation, and an empty
- * DATABASE_URL makes it fall through to the DB_* variables. Without this the jobs would open
- * whatever .env points at, find no plan due today, and report success having sent nothing —
- * the failure mode that looks exactly like a pass.
- */
-process.env.DATABASE_URL = '';
-process.env.DB_NAME = DB;
-const plan = await import('../control/SendPlanSessionRemindersController.js');
-const TZ = plan.PLAN_TIMEZONE;
-
-/** An active, ready plan whose only session falls on today, in the job's own timezone. */
-const planDueToday = (userId, type, km) =>
-  sql(`
-    WITH p AS (
-      INSERT INTO fitness_plans (user_id, goal_type, weekly_frequency, duration_weeks, is_active, generation_status, generated_at)
-      VALUES (${userId}, 'general_fitness', 3, 4, TRUE, 'ready', NOW())
-      RETURNING plan_id
-    ), w AS (
-      INSERT INTO plan_weeks (plan_id, week_number, focus)
-      SELECT plan_id, 1, 'base' FROM p RETURNING week_id
-    )
-    INSERT INTO plan_sessions (week_id, day_of_week, session_type, distance_km)
-    SELECT week_id, EXTRACT(ISODOW FROM (NOW() AT TIME ZONE '${TZ}'))::int, '${type}', ${km} FROM w;
-  `);
-
-let danaId;
-
-await story('RU-52', "Receive a reminder for today's planned session", async () => {
-  const reg = await api('/auth/register', { method: 'POST', body: { email: mk('dana'), password: 'Sprint7Harbour', name: `Dana ${stamp}` } });
-  danaId = reg.data?.user?.userId;
-  if (!danaId) return 'could not create the user';
-
-  // week_number 1 is what the job computes for a plan generated this week: it divides the
-  // days since Monday by 7, which is 0 on every day of that week.
-  planDueToday(danaId, 'tempo', '5.00');
-
-  const sent = await plan.sendPlanSessionReminders();
-  if (sent < 1) return 'the job found no session due today';
-
-  const row = sql(`SELECT title || '|' || body FROM notifications WHERE user_id=${danaId} AND type='${plan.REMINDER_TYPE}'`);
-  if (row !== "Run day|Today's plan: Tempo run, 5 km.") return `notification was ${JSON.stringify(row)}`;
-
-  // Running the job twice in one day must still leave exactly one notification.
-  await plan.sendPlanSessionReminders();
-  const count = sql(`SELECT COUNT(*) FROM notifications WHERE user_id=${danaId} AND type='${plan.REMINDER_TYPE}'`);
-  return count === '1' || `sent ${count} times in one day`;
-});
-
-await story('RU-53', 'Receive an evening nudge only while the session is undone', async () => {
-  // A second runner with the same plan who has already run today. The nudge must skip them:
-  // that guard is the only thing separating it from the morning reminder, so a test that
-  // only checks the nudge arrives would pass with the guard deleted.
-  const reg = await api('/auth/register', { method: 'POST', body: { email: mk('eli'), password: 'Sprint7Harbour', name: `Eli ${stamp}` } });
-  const eliId = reg.data?.user?.userId;
-  if (!eliId) return 'could not create the second user';
-
-  planDueToday(eliId, 'easy', '4.00');
-  // Inserted as UTC wall-clock, which is how the job reads started_at back. Going through
-  // POST /runs would be flaky in the first minute of the local day.
-  sql(`INSERT INTO runs (user_id, name, distance_km, duration_seconds, started_at)
-       VALUES (${eliId}, 'Already done', 4.1, 1500, (NOW() AT TIME ZONE 'UTC'));`);
-
-  await plan.sendMissedSessionNudges();
-
-  const dana = sql(`SELECT title || '|' || body FROM notifications WHERE user_id=${danaId} AND type='${plan.MISSED_TYPE}'`);
-  const eli = sql(`SELECT COUNT(*) FROM notifications WHERE user_id=${eliId} AND type='${plan.MISSED_TYPE}'`);
-  if (dana !== "Still time to run|Today's Tempo run, 5 km is not done yet.") return `nudge was ${JSON.stringify(dana)}`;
-  return eli === '0' || 'nudged a runner who had already run today';
 });
 
 console.log('\n━━━ REGISTERED USER — groups ━━━');

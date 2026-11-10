@@ -159,6 +159,40 @@ export function validateUserEdit(body = {}) {
 }
 
 /** SA-21 group edit: name, description, maxMembers (null clears the limit). */
+/**
+ * A new group created from the admin side.
+ *
+ * Not validateGroupEdit with partial=false: create and edit do not take the same fields.
+ * isPrivate can only be set at creation (the admin edit route deliberately cannot flip a
+ * group private after people have joined it), and ownerId exists only here.
+ */
+export function validateNewGroup(body = {}) {
+  const out = {
+    name: requiredText(body, 'name', 100),
+    description: has(body, 'description') ? optionalText(body, 'description') : null,
+    isPrivate: has(body, 'isPrivate') ? requireBoolean(body.isPrivate, 'isPrivate') : false,
+    maxMembers: null,
+    ownerId: null,
+  };
+
+  if (has(body, 'maxMembers') && body.maxMembers !== null) {
+    if (!Number.isInteger(body.maxMembers) || body.maxMembers < 1) {
+      throw AdminError.validation('Max members must be a whole number of 1 or more, or null for no limit');
+    }
+    out.maxMembers = body.maxMembers;
+  }
+
+  // Who the group belongs to. Left out, the admin creating it owns it.
+  if (has(body, 'ownerId') && body.ownerId !== null) {
+    if (!Number.isInteger(body.ownerId) || body.ownerId < 1) {
+      throw AdminError.validation('ownerId must be a user id');
+    }
+    out.ownerId = body.ownerId;
+  }
+
+  return out;
+}
+
 export function validateGroupEdit(body = {}) {
   const out = {};
 

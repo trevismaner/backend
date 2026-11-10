@@ -108,9 +108,8 @@ check('and says why, in plain words', /administrator needs to add/.test(unconfig
 const startUnconfigured = await api(`/connections/${unconfigured.provider}/connect`, { method: 'POST', token: tok });
 check('connecting an unconfigured provider is refused cleanly', startUnconfigured.status === 503, JSON.stringify(startUnconfigured.data));
 
-const apple = list.data.wearables.find((p) => p.provider === 'apple_health');
-check('Apple Health is listed but explained as on-device', apple.onDevice === true && /native build/.test(apple.unavailableReason), JSON.stringify(apple));
-check('Apple Health cannot be started', (await api('/connections/apple_health/connect', { method: 'POST', token: tok })).status === 400);
+// Every wearable now offered is a real web OAuth provider, so there is no on-device entry
+// left to assert about. Apple Health and Samsung Health were removed in migration 010.
 check('an unknown provider 404s', (await api('/connections/nonsense/connect', { method: 'POST', token: tok })).status === 404);
 
 console.log('\n━━━ WITH CREDENTIALS: THE HANDSHAKE ━━━');

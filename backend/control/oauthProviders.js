@@ -39,6 +39,37 @@ export const PROVIDERS = {
     clientSecret: () => env('FITBIT_CLIENT_SECRET'),
     canSync: true,
   },
+  /**
+   * Google Health, the cloud successor to Google Fit.
+   *
+   * Fit is not an option: sign-ups closed on 1 May 2024 and the APIs are supported only to the
+   * end of 2026. Health Connect is the other successor, but it is an on-device Android API
+   * rather than REST, so it bypasses this backend entirely. Google Health is the one that fits
+   * here — ordinary OAuth 2.0, and credentials are self-serve rather than approval-gated.
+   *
+   * An unverified client is capped at 100 users, and while the consent screen is in Testing
+   * mode refresh tokens expire after 7 days. Both are fine for a project; neither is forever.
+   */
+  google_health: {
+    kind: 'wearable',
+    label: 'Google Health',
+    docs: 'https://developers.google.com/health',
+    get authorizeUrl() { return endpoint('google_health', 'AUTHORIZE', 'https://accounts.google.com/o/oauth2/v2/auth'); },
+    get tokenUrl() { return endpoint('google_health', 'TOKEN', 'https://oauth2.googleapis.com/token'); },
+    get revokeUrl() { return endpoint('google_health', 'REVOKE', 'https://oauth2.googleapis.com/revoke'); },
+    scope: 'https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly',
+    usesPkce: true,
+    tokenAuth: 'body',
+    // See buildAuthorizeUrl in OAuthService.js: without these two there is no refresh token,
+    // and the connection dies an hour after the user grants it.
+    authParams: { access_type: 'offline', prompt: 'consent' },
+    clientId: () => env('GOOGLE_HEALTH_CLIENT_ID'),
+    clientSecret: () => env('GOOGLE_HEALTH_CLIENT_SECRET'),
+    // The handshake works. The activity adapter is not written yet, for the same reason Garmin's
+    // is not: one written from imagination would look like it worked and import nothing.
+    // Capture a real /v4/users/me/dataTypes/exercise/dataPoints response first.
+    canSync: false,
+  },
   garmin: {
     kind: 'wearable',
     label: 'Garmin Connect',
@@ -53,34 +84,15 @@ export const PROVIDERS = {
     // The handshake works, but no activity adapter is written yet — see wearableAdapters.js
     canSync: false,
   },
-  samsung_health: {
-    kind: 'wearable',
-    label: 'Samsung Health',
-    docs: 'https://developer.samsung.com/health',
-    get authorizeUrl() { return endpoint('samsung_health', 'AUTHORIZE', 'https://account.samsung.com/accounts/v1/SAMSUNGHEALTH/authorize'); },
-    get tokenUrl() { return endpoint('samsung_health', 'TOKEN', 'https://account.samsung.com/accounts/v1/SAMSUNGHEALTH/token'); },
-    scope: 'activity.read heartrate.read',
-    usesPkce: false,
-    tokenAuth: 'body',
-    clientId: () => env('SAMSUNG_CLIENT_ID'),
-    clientSecret: () => env('SAMSUNG_CLIENT_SECRET'),
-    canSync: false,
-  },
   /**
-   * Apple HealthKit is deliberately different: it is an on-device framework, not a web API.
-   * There is no OAuth handshake and no server to call — the phone reads HealthKit locally
-   * and posts the workouts up. It also cannot work in Expo Go; it needs a development build
-   * with the HealthKit entitlement. Listed so the app can say that plainly instead of
-   * offering a "Connect" button that could never work.
+   * Samsung Health and Apple Health were listed here and were removed in migration 010.
+   *
+   * Both could be declared but never connected. Samsung's activity endpoints need a signed
+   * developer agreement this project does not hold, and Apple HealthKit is an on-device
+   * framework with no OAuth handshake and no server to call — the phone would have to read
+   * HealthKit locally and post workouts up, which is a different feature from this one.
+   * Listing them only put two permanently unavailable entries on the connections screen.
    */
-  apple_health: {
-    kind: 'wearable',
-    label: 'Apple Health',
-    docs: 'https://developer.apple.com/documentation/healthkit',
-    onDevice: true,
-    reason: 'Apple Health is read on the device itself, so it needs a native build rather than a web sign-in. It cannot be connected from Expo Go.',
-    canSync: false,
-  },
 
   // ── social (RU-49) ──
   strava: {
@@ -159,7 +171,7 @@ export function getProvider(name) {
 /** Configured = we hold credentials for it, so a connection attempt could actually finish. */
 export function isConfigured(name) {
   const p = PROVIDERS[name];
-  if (!p || p.onDevice) return false;
+  if (!p) return false;
   return Boolean(p.clientId?.() && p.clientSecret?.());
 }
 
@@ -176,12 +188,9 @@ export function describeProviders(kind = null) {
       kind: p.kind,
       available: isConfigured(name),
       canSync: Boolean(p.canSync),
-      onDevice: Boolean(p.onDevice),
-      unavailableReason: p.onDevice
-        ? p.reason
-        : isConfigured(name)
-          ? null
-          : `${p.label} is not set up on this server yet — an administrator needs to add its API credentials.`,
+      unavailableReason: isConfigured(name)
+        ? null
+        : `${p.label} is not set up on this server yet — an administrator needs to add its API credentials.`,
       docs: p.docs,
     }));
 }

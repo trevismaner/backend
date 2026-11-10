@@ -6,9 +6,10 @@
  * Adding a provider means adding an entry here — nothing else changes.
  *
  * Fitbit is implemented as the worked example because its Web API is the best documented
- * of the three. Garmin and Samsung Health need a signed developer agreement before their
- * activity endpoints can even be called, so they are declared but not guessed at: an
- * adapter written from imagination would look like it worked and quietly import nothing.
+ * of the three. Garmin needs a signed developer agreement before its activity endpoints can
+ * even be called, and Google Health's dataPoints response should be captured from a real
+ * request rather than assumed, so both are declared but not guessed at: an adapter written
+ * from imagination would look like it worked and quietly import nothing.
  */
 
 const TIMEOUT_MS = 10000;

@@ -28,8 +28,17 @@ class Group {
   }
 
   // Group and its creator's admin membership are created together or not at all.
-  static async create({ name, description, isPrivate, maxMembers, createdBy }) {
-    return withTransaction(async (client) => {
+  /**
+   * Creates the group and makes `createdBy` its first active group admin.
+   *
+   * `client` lets a caller that is already inside a transaction have both inserts join it
+   * rather than open a second one. The admin create path needs that: its audit entry and
+   * this group must commit or roll back together, and nesting withTransaction would give
+   * the group its own transaction that commits even if the audit write then fails.
+   * Omitting it keeps the original behaviour, so the ordinary create path is unchanged.
+   */
+  static async create({ name, description, isPrivate, maxMembers, createdBy }, client = null) {
+    const insert = async (client) => {
       const result = await client.query(
         `INSERT INTO groups (name, description, is_private, max_members, created_by)
          VALUES ($1, $2, $3, $4, $5)
@@ -43,7 +52,8 @@ class Group {
         [group.groupId, createdBy]
       );
       return group;
-    });
+    };
+    return client ? insert(client) : withTransaction(insert);
   }
 
   static async findById(groupId, client = pool, { forUpdate = false } = {}) {

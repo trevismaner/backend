@@ -36,6 +36,17 @@ export function buildAuthorizeUrl(providerName, { state, codeChallenge }) {
     params.set('code_challenge', codeChallenge);
     params.set('code_challenge_method', 'S256');
   }
+  /**
+   * Per-provider extras on the authorize call.
+   *
+   * Google is the reason this exists: it issues a refresh token only when access_type=offline
+   * is on the authorize URL, and reissues one on a repeat approval only with prompt=consent.
+   * Without both, a Google Health connection works for exactly one hour and then fails
+   * silently at the next sync, which looks like a broken adapter rather than a missing token.
+   */
+  for (const [key, value] of Object.entries(p.authParams ?? {})) {
+    params.set(key, value);
+  }
   return `${p.authorizeUrl}?${params.toString()}`;
 }
 
