@@ -18,6 +18,9 @@ class User {
     this.isSuspended = row.is_suspended;
     this.profilePhotoUrl = row.profile_photo_url;
     this.bio = row.bio;
+    // migration 011 — NUMERIC comes back from node-pg as a string, so it is converted here
+    // rather than leaving every caller to remember that "70.00" is not a number.
+    this.weightKg = row.weight_kg === null || row.weight_kg === undefined ? null : Number(row.weight_kg);
     this.credentialsVerified = row.credentials_verified;
     // migration 004 — what the instructor submitted for review (SA-11)
     this.credentialQualification = row.credential_qualification ?? null;
@@ -46,6 +49,7 @@ class User {
       isGroupAdmin: this.isGroupAdmin,
       profilePhotoUrl: this.profilePhotoUrl,
       bio: this.bio,
+      weightKg: this.weightKg,
       createdAt: this.createdAt,
     };
   }
@@ -109,16 +113,17 @@ class User {
     return new User(result.rows[0]);
   }
 
-  static async updateProfile(userId, { name, bio, profilePhotoUrl }) {
+  static async updateProfile(userId, { name, bio, profilePhotoUrl, weightKg }) {
     const result = await pool.query(
       `UPDATE users
        SET name = COALESCE($2, name),
            bio = COALESCE($3, bio),
            profile_photo_url = COALESCE($4, profile_photo_url),
+           weight_kg = COALESCE($5, weight_kg),
            updated_at = NOW()
        WHERE user_id = $1
        RETURNING *`,
-      [userId, name, bio, profilePhotoUrl]
+      [userId, name, bio, profilePhotoUrl, weightKg]
     );
     return result.rows[0] ? new User(result.rows[0]) : null;
   }

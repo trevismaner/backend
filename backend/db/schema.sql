@@ -36,7 +36,7 @@ CREATE TABLE user_notification_preferences (
 CREATE TABLE connected_wearables (
     wearable_id     SERIAL PRIMARY KEY,
     user_id         INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
-    provider        VARCHAR(20) NOT NULL CHECK (provider IN ('fitbit', 'garmin', 'google_health')),
+    provider        VARCHAR(20) NOT NULL CHECK (provider IN ('fitbit', 'garmin', 'samsung_health', 'apple_health')),
     access_token    TEXT NOT NULL,
     refresh_token   TEXT,
     connected_at    TIMESTAMP NOT NULL DEFAULT NOW(),

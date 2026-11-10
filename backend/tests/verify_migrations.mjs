@@ -29,6 +29,7 @@
  */
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
+import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 
@@ -41,17 +42,16 @@ const PORT = process.env.DB_PORT || '5432';
 const USER = process.env.DB_USER || process.env.PGUSER || 'postgres';
 const PASSWORD = process.env.DB_PASSWORD || process.env.PGPASSWORD || '';
 
+/**
+ * Read from db/ rather than listed here, using the same pattern scripts/migrate.js uses to
+ * discover them. The list was hardcoded and went stale the moment a migration was added:
+ * every check below then failed with a count mismatch that said nothing about migrations
+ * and everything about this array. A test that has to be edited whenever the thing it
+ * tests grows will eventually just be switched off.
+ */
 const ALL_FILES = [
   'schema.sql',
-  '001_system_admin.sql',
-  '002_admin_extensions.sql',
-  '003_connected_accounts.sql',
-  '004_instructor_credentials.sql',
-  '005_run_tracking.sql',
-  '006_leaderboard_totals.sql',
-  '007_plan_sessions.sql',
-  '008_email_verification.sql',
-  '009_email_case_insensitive.sql',
+  ...readdirSync(DB_DIR).filter((f) => /^\d{3}_.*\.sql$/.test(f)).sort(),
 ];
 
 let passed = 0;

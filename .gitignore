@@ -10,3 +10,5 @@ node_modules/
 # them from app.json on every build instead.
 mobile/android/
 mobile/ios/
+
+mobile/.git-disabled/

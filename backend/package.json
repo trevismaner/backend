@@ -27,8 +27,8 @@
     "predev": "node scripts/checkDeps.cjs",
     "premigrate:status": "node scripts/checkDeps.cjs",
     "preseed": "node scripts/checkDeps.cjs",
-    "test:plan-reminders": "node tests/plan_reminders.test.mjs",
     "test:migrations": "node tests/verify_migrations.mjs",
+    "test:calories": "node tests/calorie_estimate.test.mjs",
     "test:auth": "node tests/verify_auth_hardening.mjs",
     "test:validation": "node tests/verify_input_validation.mjs",
     "mail:test": "node scripts/testMail.js"

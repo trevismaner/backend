@@ -5,6 +5,7 @@ import {
   MAX_BIO_LENGTH,
   MAX_URL_LENGTH,
 } from './InputPolicy.js';
+import { MIN_WEIGHT_KG, MAX_WEIGHT_KG } from './CalorieEstimate.js';
 
 /**
  * Each field is optional — `undefined` means "leave it alone", which is what the entity's
@@ -19,7 +20,7 @@ import {
  */
 async function updateProfile(req, res) {
   try {
-    const { name, bio, profilePhotoUrl } = req.body;
+    const { name, bio, profilePhotoUrl, weightKg } = req.body;
 
     const checks = [
       validateText(name, { label: 'Name', max: MAX_NAME_LENGTH, required: false }),
@@ -36,6 +37,24 @@ async function updateProfile(req, res) {
       return res.status(400).json({ error: bad.problem });
     }
 
+    /**
+     * Weight is optional, but a weight that IS sent has to be a number in range — the
+     * column has the same CHECK, and letting a bad value through would surface as a
+     * constraint violation caught below as "500 Failed to update profile", which tells
+     * the person nothing. The bounds catch a weight entered in pounds or mistyped by a
+     * digit; both would otherwise produce a confident calorie figure that is badly wrong.
+     */
+    let checkedWeight;
+    if (weightKg !== undefined && weightKg !== null && weightKg !== '') {
+      const n = Number(weightKg);
+      if (!Number.isFinite(n) || n < MIN_WEIGHT_KG || n > MAX_WEIGHT_KG) {
+        return res.status(400).json({
+          error: `Weight must be a number between ${MIN_WEIGHT_KG} and ${MAX_WEIGHT_KG} kg`,
+        });
+      }
+      checkedWeight = Math.round(n * 100) / 100;   // the column is NUMERIC(5,2)
+    }
+
     const [checkedName, checkedBio, checkedPhotoUrl] = checks;
 
     // The trimmed values, so what is stored matches what was validated.
@@ -43,6 +62,8 @@ async function updateProfile(req, res) {
       name: checkedName.value,
       bio: checkedBio.value,
       profilePhotoUrl: checkedPhotoUrl.value,
+      // undefined leaves it alone, which is what the COALESCE in the entity does.
+      weightKg: checkedWeight,
     });
     return res.status(200).json({ user: updatedUser.toJSON() });
   } catch (err) {

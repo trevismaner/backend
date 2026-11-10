@@ -83,6 +83,10 @@ const MARKERS = {
   // 009 adds no table or column — its whole effect is the unique functional index, so that
   // is what gets probed.
   '009_email_case_insensitive.sql':{ index: 'idx_users_email_lower' },
+  // 010 adds no table, column or index — it only rewrites a CHECK constraint — so its
+  // evidence is the constraint accepting the provider it was added for.
+  '010_wearable_providers.sql':    { constraintAllows: ['connected_wearables_provider_check', 'google_health'] },
+  '011_user_weight.sql':           { table: 'users', column: 'weight_kg' },
 };
 
 async function markerPresent(filename) {
@@ -96,6 +100,19 @@ async function markerPresent(filename) {
       [marker.index]
     );
     return rows[0].n > 0;
+  }
+
+  /**
+   * For a migration whose only effect is changing a CHECK constraint, the evidence is the
+   * constraint's own definition mentioning a value the old version did not allow.
+   */
+  if (marker.constraintAllows) {
+    const [name, allowed] = marker.constraintAllows;
+    const { rows } = await pool.query(
+      'SELECT pg_get_constraintdef(oid) AS def FROM pg_constraint WHERE conname = $1',
+      [name]
+    );
+    return rows.length > 0 && rows[0].def.includes(allowed);
   }
 
   if (marker.column) {
